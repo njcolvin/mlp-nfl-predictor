@@ -14,12 +14,11 @@ class Loss():
 
 class MSE(Loss):
 
-    def mse(self, y_pred, y_true):
-        return np.mean(np.power(y_true - y_pred, 2))
-
-    def mse_derivative(self, y_pred, y_true):
-        return 2 * (y_pred - y_true) / y_pred.size
-
     def __init__(self) -> None:
-        super().__init__(self.mse, self.mse_derivative)
+        super().__init__(mse, mse_derivative)
 
+def mse(y_pred, y_true):
+    return np.mean(np.power(y_true - y_pred, 2))
+
+def mse_derivative(y_pred, y_true):
+    return 2 * (y_pred - y_true) / y_pred.size

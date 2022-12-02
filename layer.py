@@ -15,7 +15,6 @@ class Layer():
     def back_propagate(self, de_dy:float, learning_rate:float) -> float:
         de_dx = np.dot(de_dy, self.weights.T)
         de_dw = np.dot(self.input.T, de_dy)
-        # de_db = de_dy
         self.weights -= learning_rate * de_dw
         self.bias -= learning_rate * de_dy
         return de_dx
