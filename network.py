@@ -5,16 +5,15 @@ from initialization import Initialization, GaussianInitialization, UniformInitia
 from activation import Activation, SigmoidActivation, TanhActivation, ReLUActivation
 
 class Network:
-    def __init__(self, hidden_layer_sizes=(100,), max_iter=200,
-    initialization:Initialization=GaussianInitialization(), activation:Activation=ReLUActivation(),
-    loss:Loss=MSE(), learning_rate:float=0.001):
+    def __init__(self, hidden_layer_configs:tuple=((100, TanhActivation()),), max_iter=200,
+                        initialization:Initialization=GaussianInitialization(), loss:Loss=MSE(), learning_rate:float=0.001):
+        
         assert max_iter > 0
         assert learning_rate > 0
         self.layers = []
-        self.sizes = hidden_layer_sizes
+        self.hidden_layer_configs = hidden_layer_configs
         self.max_iter = max_iter
         self.initialization = initialization
-        self.activation = activation
         self.loss = loss
         self.learning_rate = learning_rate
 
@@ -41,24 +40,7 @@ class Network:
         assert n > 0
         assert len(y_train) == n
 
-        num_layers = len(self.sizes)
-        assert num_layers > 0
-
-        # build network
-        # input layer
-        print(np.shape(x_train))
-        print(np.shape(y_train))
-        self.initialization.set_layer_size(len(x_train[0][0]), self.sizes[0])
-        self.layers.append(Layer(self.initialization))
-        # hidden layer(s)
-        for i in range(1, num_layers):
-            self.initialization.set_layer_size(self.sizes[i - 1], self.sizes[i])
-            self.layers.append(Layer(self.initialization))
-        # output layer
-        self.initialization.set_layer_size(self.sizes[num_layers - 1], len(y_train[0][3]))
-        self.layers.append(Layer(self.initialization))
-        print(len(self.layers))
-        print(self.layers[len(self.layers) - 1].weights)
+        self.__build_network(x_train, y_train)
 
         # training loop
         for i in range(self.max_iter):
@@ -81,13 +63,34 @@ class Network:
             err /= n
             print('iter %d/%d   error=%f' % (i+1, self.max_iter, err))
 
+    def __build_network(self, x, y):
+        num_hidden_layers = len(self.hidden_layer_configs)
+        assert num_hidden_layers > 0
+
+        # build network
+
+        # input layer
+        self.initialization.set_layer_size(len(x[0][0]), self.hidden_layer_configs[0][0])
+        self.layers.append(Layer(self.initialization))
+        # activation
+        self.layers.append(self.hidden_layer_configs[0][1]())
+        # hidden layer(s)
+        for i in range(1, num_hidden_layers):
+            self.initialization.set_layer_size(self.sizes[i - 1], self.hidden_layer_configs[i][0])
+            self.layers.append(Layer(self.initialization))
+            self.layers.append(self.hidden_layer_configs[i][1]())
+        # output layer
+        self.initialization.set_layer_size(self.hidden_layer_configs[num_hidden_layers - 1][0], len(y[0]))
+        self.layers.append(Layer(self.initialization))
+        self.layers.append(self.hidden_layer_configs[num_hidden_layers - 1][1]())
+
 
 def main():
     x_train = np.array([[[0,0]], [[0,1]], [[1,0]], [[1,1]]])
     y_train = np.array([[0], [1], [1], [0]])
 
     # network
-    net = Network(hidden_layer_sizes=(3,), max_iter=2000, learning_rate=0.05,
+    net = Network(hidden_layer_configs=((3, TanhActivation),), max_iter=2000, learning_rate=0.15,
                     initialization=UniformInitialization())
     # train
     net.fit(x_train, y_train)
