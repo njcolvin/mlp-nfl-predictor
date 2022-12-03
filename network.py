@@ -82,7 +82,12 @@ class Network:
         # output layer
         self.initialization.set_layer_size(self.hidden_layer_configs[num_hidden_layers - 1][0], len(y[0]))
         self.layers.append(Layer(self.initialization))
-        self.layers.append(self.hidden_layer_configs[num_hidden_layers - 1][1]())
+
+        # ReLU cannot be used to activate output layer
+        if self.hidden_layer_configs[num_hidden_layers - 1][1] == ReLUActivation:
+            self.layers.append(TanhActivation())
+        else:
+            self.layers.append(self.hidden_layer_configs[num_hidden_layers - 1][1]())
 
 
 def main():
@@ -90,7 +95,7 @@ def main():
     y_train = np.array([[0], [1], [1], [0]])
 
     # network
-    net = Network(hidden_layer_configs=((3, TanhActivation),), max_iter=2000, learning_rate=0.15,
+    net = Network(hidden_layer_configs=((3, ReLUActivation),), max_iter=2000, learning_rate=0.2,
                     initialization=UniformInitialization())
     # train
     net.fit(x_train, y_train)
