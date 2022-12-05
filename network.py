@@ -80,7 +80,7 @@ class Network:
             self.layers.append(Layer(self.initialization))
             self.layers.append(self.hidden_layer_configs[i][1]())
         # output layer
-        self.initialization.set_layer_size(self.hidden_layer_configs[num_hidden_layers - 1][0], len(y[0]))
+        self.initialization.set_layer_size(self.hidden_layer_configs[num_hidden_layers - 1][0], len(y[0][0]))
         self.layers.append(Layer(self.initialization))
 
         # ReLU cannot be used to activate output layer
@@ -92,10 +92,10 @@ class Network:
 
 def main():
     x_train = np.array([[[0,0]], [[0,1]], [[1,0]], [[1,1]]])
-    y_train = np.array([[0], [1], [1], [0]])
+    y_train = np.array([[[1,1]], [[1,0]], [[0,1]], [[0,0]]])
 
     # network
-    net = Network(hidden_layer_configs=((3, ReLUActivation),), max_iter=2000, learning_rate=0.2,
+    net = Network(hidden_layer_configs=((3, ReLUActivation),), max_iter=200, learning_rate=0.2,
                     initialization=UniformInitialization())
     # train
     net.fit(x_train, y_train)
@@ -104,4 +104,3 @@ def main():
     out = net.predict(x_train)
     print(out)
 
-main()

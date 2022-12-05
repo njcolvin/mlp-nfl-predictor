@@ -15,6 +15,10 @@ class Activation(Layer):
     def back_propagate(self, de_dy:float, learning_rate:float) -> float:
         return de_dy * self.derivative(self.input)
 
+class IdentityActivation(Activation):
+    def __init__(self) -> None:
+        super().__init__(lambda x: x, lambda x: 1)
+
 class SigmoidActivation(Activation):
     def __init__(self) -> None:
         super().__init__(sigmoid, sigmoid_derivative)
