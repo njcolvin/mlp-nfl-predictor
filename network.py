@@ -2,7 +2,7 @@ from loss import Loss, MSE
 import numpy as np
 from layer import Layer
 from initialization import Initialization, GaussianInitialization, UniformInitialization
-from activation import Activation, SigmoidActivation, TanhActivation, ReLUActivation
+from activation import Activation, SigmoidActivation, TanhActivation, ReLUActivation, IdentityActivation
 
 class Network:
     def __init__(self, hidden_layer_configs:tuple=((100, TanhActivation()),), max_iter=200,
@@ -85,7 +85,7 @@ class Network:
 
         # ReLU cannot be used to activate output layer
         if self.hidden_layer_configs[num_hidden_layers - 1][1] == ReLUActivation:
-            self.layers.append(TanhActivation())
+            self.layers.append(IdentityActivation())
         else:
             self.layers.append(self.hidden_layer_configs[num_hidden_layers - 1][1]())
 
