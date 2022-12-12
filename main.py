@@ -10,38 +10,12 @@ from preprocess import standardize, build_dataset
 from postprocess import caluclate_profit_sklearn, caluclate_profit_network
 
 def main():
-    """ 
-    M = np.genfromtxt('./data/data-no-wl', missing_values=0, skip_header=1, delimiter=' ', dtype=object)
-    
-    y = [[row[len(M[0]) - 2], row[len(M[0]) - 1]] for row in M]
-    x = [row[1:len(M[0]) - 2] for row in M]
-    y = np.array(y)
-    x = np.array(x)
-
-    
-
-    # encode team names
-    encoder = LabelEncoder()
-    x[:, 1] = encoder.fit_transform(x[:, 1])
-    x[:, 4] = encoder.transform(x[:, 4])
-
-    # set dtype to float
-    x = x.astype('float64')
-    y = y.astype('float64')
-    """
 
     # train test split
-    #Xtrn, Xtst, Ytrn, Ytst = train_test_split(x, y)
     Xtrn = np.genfromtxt('./data/train-x', missing_values=0, skip_header=0, delimiter=' ', dtype=float)
     Xtst = np.genfromtxt('./data/test-x', missing_values=0, skip_header=0, delimiter=' ', dtype=float)
     Ytrn = np.genfromtxt('./data/train-y', missing_values=0, skip_header=0, delimiter=' ', dtype=int)
     Ytst = np.genfromtxt('./data/test-y', missing_values=0, skip_header=0, delimiter=' ', dtype=int)
-
-    """     np.savetxt('data/train-x', Xtrn, fmt='%d %d %d %d %d %d %1.1f %1.1f %1.1f %1.1f')
-    np.savetxt('data/train-y', Ytrn, fmt='%d %d')
-    
-    np.savetxt('data/test-x', Xtst, fmt='%d %d %d %d %d %d %1.1f %1.1f %1.1f %1.1f')
-    np.savetxt('data/test-y', Ytst, fmt='%d %d') """
 
     # get averages, standard devs
     xtst_mu, xtst_sigma = np.mean(Xtst, axis=0), np.std(Xtst, axis=0)
@@ -64,10 +38,6 @@ def main():
     print("score: " + str(s))
     
     # sample for tonight's game
-    #sample = [-1, encoder.transform([b'Miami'])[0], 174, 1, encoder.transform([b'LAChargers'])[0], -140, -5.5, 3, 51.5, 54.5]
-    #sample = (sample - xtst_mu) / xtst_sigma
-    #y_sample = linear.predict([sample])
-    #print("MIA @ LAC: " + str(y_sample * ytst_sigma + ytst_mu))
 
     print("")
     
@@ -82,11 +52,6 @@ def main():
         
         p = caluclate_profit_sklearn(Xtst * xtst_sigma + xtst_mu, y_pred, Ytst * ytst_sigma + ytst_mu)
 
-        #sample = [-1, encoder.transform([b'Miami'])[0], 174, 1, encoder.transform([b'LAChargers'])[0], -140, -5.5, 3, 51.5, 54.5]
-        #sample = (sample - xtst_mu) / xtst_sigma
-        #y_sample = nn.predict([sample])
-        #print("MIA @ LAC: " + str(y_sample * ytst_sigma + ytst_mu))
-
         s = nn.score(Xtst, Ytst)
         avg_profit.append(p)
         avg_score.append(s)
@@ -99,22 +64,7 @@ def main():
     # own implementation
     print("own implementation")
 
-    """ 
-    y = np.array([[[row[len(M[0]) - 2], row[len(M[0]) - 1]]] for row in M])
-    x = np.array([[row[1:len(M[0]) - 2]] for row in M])
-
-    # encode team names
-    encoder = LabelEncoder()
-    x[:, 0, 1] = encoder.fit_transform(x[:, 0, 1])
-    x[:, 0, 4] = encoder.transform(x[:, 0, 4])
-
-    # set dtype to float
-    x = x.astype('float64')
-    y = y.astype('float64')
-    """
-
     # train test split
-    # Xtrn, Xtst, Ytrn, Ytst = train_test_split(x, y)
 
     Xtrn = np.genfromtxt('./data/train-x', missing_values=0, skip_header=0, delimiter=' ', dtype=float)
     Xtst = np.genfromtxt('./data/test-x', missing_values=0, skip_header=0, delimiter=' ', dtype=float)
@@ -139,9 +89,4 @@ def main():
 
     p = caluclate_profit_network(Xtst * xtst_sigma + xtst_mu, y_pred * ytst_sigma + ytst_mu, Ytst * ytst_sigma + ytst_mu, include_winloss=False)
     
-    #sample = [-1, encoder.transform([b'Miami'])[0], 174, 1, encoder.transform([b'LAChargers'])[0], -140, 0, 8.5, 51.5, 54.5]
-    #sample = (sample - xtst_mu) / xtst_sigma
-    #y_sample = better_nn.predict([sample])
-    #print("MIA @ LAC: " + str(y_sample * ytst_sigma + ytst_mu))
-
 main()
