@@ -7,12 +7,12 @@ class Activation(Layer):
         self.function = function
         self.derivative = derivative
 
-    def forward_propagate(self, input:np.ndarray) -> np.ndarray:
+    def forward_propagate(self, input):
         self.input = input
         self.output = self.function(input)
         return self.output
 
-    def back_propagate(self, de_dy:float, learning_rate:float) -> float:
+    def back_propagate(self, de_dy, learning_rate):
         return de_dy * self.derivative(self.input)
 
 class IdentityActivation(Activation):
