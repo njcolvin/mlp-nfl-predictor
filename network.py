@@ -65,7 +65,7 @@ class Network:
         self.layers.append(self.hidden_layer_configs[0][1]())
         # hidden layer(s)
         for i in range(1, num_hidden_layers):
-            self.initialization.set_layer_size(self.sizes[i - 1], self.hidden_layer_configs[i][0])
+            self.initialization.set_layer_size(self.hidden_layer_configs[i - 1][0], self.hidden_layer_configs[i][0])
             self.layers.append(Layer(self.initialization))
             self.layers.append(self.hidden_layer_configs[i][1]())
         # output layer

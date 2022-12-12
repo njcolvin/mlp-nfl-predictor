@@ -1,6 +1,4 @@
 from sklearn.neural_network import MLPRegressor
-from sklearn.preprocessing import LabelEncoder
-from sklearn.model_selection import train_test_split
 import numpy as np
 from network import Network
 from activation import ReLUActivation, SigmoidActivation, TanhActivation
@@ -8,6 +6,8 @@ from initialization import UniformInitialization, GaussianInitialization
 from sklearn.linear_model import LinearRegression
 from preprocess import standardize, build_dataset
 from postprocess import caluclate_profit_sklearn, caluclate_profit_network
+from sklearn.metrics import r2_score
+import matplotlib.pyplot as plt
 
 def main():
 
@@ -28,9 +28,9 @@ def main():
     print("linear regression")
 
     linear = LinearRegression().fit(Xtrn, Ytrn)
-    lin_pred = linear.predict(Xtst) * ytst_sigma + ytst_mu
+    lin_pred = linear.predict(Xtst)
 
-    p = caluclate_profit_sklearn(Xtst * xtst_sigma + xtst_mu, lin_pred, Ytst * ytst_sigma + ytst_mu)
+    p = caluclate_profit_sklearn(Xtst * xtst_sigma + xtst_mu, lin_pred * ytst_sigma + ytst_mu, Ytst * ytst_sigma + ytst_mu)
 
     s = linear.score(Xtst, Ytst)
 
@@ -47,12 +47,13 @@ def main():
     avg_profit = []
     avg_score = []
     for _ in range(10):
-        nn = MLPRegressor(hidden_layer_sizes=(100,), max_iter=1000, learning_rate_init=0.003).fit(Xtrn, Ytrn)
-        y_pred = nn.predict(Xtst) * ytst_sigma + ytst_mu
-        
-        p = caluclate_profit_sklearn(Xtst * xtst_sigma + xtst_mu, y_pred, Ytst * ytst_sigma + ytst_mu)
+        nn = MLPRegressor(hidden_layer_sizes=(100,32,), max_iter=100, learning_rate_init=0.003).fit(Xtrn, Ytrn)
+        nn_pred = nn.predict(Xtst)
+    
+        p = caluclate_profit_sklearn(Xtst * xtst_sigma + xtst_mu, nn_pred * ytst_sigma + ytst_mu, Ytst * ytst_sigma + ytst_mu)
 
         s = nn.score(Xtst, Ytst)
+        print('s: ' + str(s))
         avg_profit.append(p)
         avg_score.append(s)
 
@@ -88,5 +89,24 @@ def main():
     y_pred = better_nn.predict(Xtst)
 
     p = caluclate_profit_network(Xtst * xtst_sigma + xtst_mu, y_pred * ytst_sigma + ytst_mu, Ytst * ytst_sigma + ytst_mu, include_winloss=False)
+
+    Xtst_2d = np.genfromtxt('./data/test-x', missing_values=0, skip_header=0, delimiter=' ', dtype=float)
+    ytst_2d = np.genfromtxt('./data/test-y', missing_values=0, skip_header=0, delimiter=' ', dtype=float)
+
+    xtst_mu, xtst_sigma = np.mean(Xtst_2d, axis=0), np.std(Xtst_2d, axis=0)
+    ytst_mu, ytst_sigma = np.mean(ytst_2d, axis=0), np.std(ytst_2d, axis=0)
+    
+    Xtst_2d = standardize(Xtst_2d)
+    y_pred_2d = np.array([[row[0][0], row[0][1]] for row in y_pred])
+    y_pred_2d = y_pred_2d * ytst_sigma + ytst_mu
+    y_pred_2d = np.array([[int(row[0]), int(row[1])] for row in y_pred_2d])
+
+    print("r2: " + str(r2_score(ytst_2d, y_pred_2d)))
+    
+    for i in range(100):
+        plt.scatter(y_pred_2d[i,0], y_pred_2d[i,1], color ='b')
+        plt.scatter(ytst_2d[i,0], ytst_2d[i,1], color ='r')
+        plt.plot([y_pred_2d[i,0], ytst_2d[i,0]], [y_pred_2d[i,1], ytst_2d[i,1]])
+    plt.show()
     
 main()
