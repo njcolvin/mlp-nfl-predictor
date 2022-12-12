@@ -40,7 +40,7 @@ class GaussianInitialization(Initialization):
         super().__init__()
 
     def get_weights(self):
-        return np.random.standard_normal(size=(self.input_size, self.output_size))
+        return np.random.standard_normal(size=(self.input_size, self.output_size)) * 0.01
 
     def get_bias(self):
-        return np.random.standard_normal(size=(1, self.output_size))
+        return np.random.standard_normal(size=(1, self.output_size)) * 0.01

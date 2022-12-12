@@ -23,13 +23,13 @@ class MAE(Loss):
         super().__init__(mae, mae_derivative)
 
 def mse(y_pred, y_true):
-    return np.mean(np.power(y_true - y_pred, 2))
+    return ((y_true - y_pred) ** 2).mean()
 
 def mse_derivative(y_pred, y_true):
     return 2 * (y_pred - y_true) / y_pred.size
 
 def mae(y_pred, y_true):
-    return np.mean(np.abs(y_true - y_pred))
+    return np.abs(y_true - y_pred).mean()
 
 def mae_derivative(y_pred, y_true):
     rtn = [[0, 0]]
