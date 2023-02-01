@@ -14,6 +14,24 @@ In order to judge the relative importance of each feature to the model predictio
 
 Additionally, bar charts were generated in order to gain insight as to which features were weighed more heavily by my implementation of the model. Each bar represents a sample, and the 25 best predictions are shown. The size of each section represents the norm of the product of feature weights and sample value. These charts were generated after the performance table, and do not reflect the weights for those models. However, they provide similar examples of what a single training session might generate. Features were removed in the same order as in the table.
 
+_Results_
+
+Scikit-learn MLPRegressor
+
+<img width="867" alt="mlpregressor performance table" src="https://user-images.githubusercontent.com/7663086/216105150-11c20d3a-cde0-4125-a2c5-c4e1af4f2cd2.png">
+
+Own Implementation
+
+<img width="876" alt="own implementation performance table" src="https://user-images.githubusercontent.com/7663086/216105331-1cfe89ca-383b-4582-bab0-a76c2f1cc5b7.png">
+
+<img width="694" alt="all, no advantage" src="https://user-images.githubusercontent.com/7663086/216105514-7e8f2502-65bd-43a3-9630-558763d7e7a6.png">
+
+<img width="690" alt="no name, no moneyline" src="https://user-images.githubusercontent.com/7663086/216105627-89a38c6d-5730-4f2e-9335-47fc5105e409.png">
+
+<img width="685" alt="no spread open, no spread close" src="https://user-images.githubusercontent.com/7663086/216105733-571da31b-808c-4090-ab4c-a214145b9cb5.png">
+
+<img width="684" alt="no ou open, no ou close" src="https://user-images.githubusercontent.com/7663086/216106358-6b3eee4e-d2a3-420e-b64b-2cbaace03dff.png">
+
 _Analysis & Conclusions_
 
 The most important features for my model on average were the moneyline, team IDs, closing total, and closing spread. This coincides with lower R2 values when those features were removed from the dataset. However, while scores were worse, returns were better without moneyline in the dataset. It was also a bit surprising that MAE was lower without team names, but an explanation is that the model can afford greater degrees of freedom with respect to the other features. The biggest surprise from my model was an average profit of over 20 units betting the total when the closing total was removed. This was the only positive return made by any of the models, and a reasonable standard deviation suggests it was not entirely by chance.
